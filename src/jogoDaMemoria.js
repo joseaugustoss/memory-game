@@ -1,8 +1,9 @@
 class JogoDaMemoria {
   // se mandar um obj = { tela: 1, idade: 2, etc: 3 }
   // vai ignorar o resto das propriedades e pegar somente a propriedade tela
-  constructor({ tela }) {
+  constructor({ tela, util }) {
     this.tela = tela;
+    this.util = util;
 
     this.heroisIniciais = [
       // caminho do arquivo, sempre relativo do
@@ -25,7 +26,7 @@ class JogoDaMemoria {
     this.tela.configurarBotaoJogar(this.jogar.bind(this));
     this.tela.configurarBotaoVerificarSelecao(this.verificarSelecao.bind(this));
   }
-  embaralhar() {
+  async embaralhar() {
     const copias = this.heroisIniciais
       // duplicar os itens
       .concat(this.heroisIniciais)
@@ -37,10 +38,11 @@ class JogoDaMemoria {
       .sort(() => Math.random() - 0.5);
 
     this.tela.atualizarImagens(copias);
+    this.tela.exibirCarregando();
     // vamos esperar 1 segundo para atualizar a tela
-    setTimeout(() => {
-      this.esconderHerois(copias);
-    }, 1000);
+    await this.util.timeout(1000);
+    this.esconderHerois(copias);
+    this.tela.exibirCarregando(false);
   }
   esconderHerois(herois) {
     //vamos trocar a imagem de todos os herois existentes
@@ -99,12 +101,12 @@ class JogoDaMemoria {
           // alert("Parabéns, você ganhou!");
           // alert("combinação correta " + item.nome);
           // como o padrão e true, não precisa passar se
-          this.tela.exibirMensagem()
+          this.tela.exibirMensagem();
           // para a execução
 
           return;
         }
-        this.tela.exibirMensagem(false)
+        this.tela.exibirMensagem(false);
         // fim do case
         break;
     }
