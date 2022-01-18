@@ -25,6 +25,7 @@ class JogoDaMemoria {
     // força a tela a user o THIS de jogo da memoria
     this.tela.configurarBotaoJogar(this.jogar.bind(this));
     this.tela.configurarBotaoVerificarSelecao(this.verificarSelecao.bind(this));
+    this.tela.configurarBotaoMostarTudo(this.mostrarHeroisEscondidos.bind(this));
   }
   async embaralhar() {
     const copias = this.heroisIniciais
@@ -39,8 +40,10 @@ class JogoDaMemoria {
 
     this.tela.atualizarImagens(copias);
     this.tela.exibirCarregando();
-    // vamos esperar 1 segundo para atualizar a tela
-    await this.util.timeout(1000);
+    const idDoIntervalo = this.tela.iniciarContador();
+    // vamos esperar 3 segundos para atualizar a tela
+    await this.util.timeout(3000);
+    this.tela.limparContador(idDoIntervalo);
     this.esconderHerois(copias);
     this.tela.exibirCarregando(false);
   }
@@ -110,6 +113,18 @@ class JogoDaMemoria {
         // fim do case
         break;
     }
+  }
+  mostrarHeroisEscondidos() {
+    // vamos pegar todos os herois da tela e colocar seu
+    // respectivo valor correto
+    const heroisEscondidos = this.heroisEscondidos;
+    for (const heroi of heroisEscondidos) {
+      const { img } = this.heroisIniciais.find(
+        (item) => item.nome == heroi.nome
+      );
+      heroi.img = img;
+    }
+    this.tela.atualizarImagens(heroisEscondidos);
   }
   jogar() {
     this.embaralhar();
